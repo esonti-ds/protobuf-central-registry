@@ -1,0 +1,15 @@
+version: v2
+modules:
+  - path: .
+    name: protobuf-sm-central-registry/media-stream-api/mediastream
+deps:
+  - buf.build/googleapis/googleapis
+  - protobuf-sm-central-registry/common-definitions/common
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_VERSION_SUFFIX

@@ -1,0 +1,12 @@
+*.pb.h
+*.pb.cc
+*.pb.go
+*.pb.java
+*_pb2.py
+*_pb2_grpc.py
+*_pb.js
+*_pb.d.ts
+gen/
+build/
+dist/
+.DS_Store

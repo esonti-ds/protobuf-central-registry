@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package videoviewer;
+
+option go_package = "github.com/esonti/protobuf/gen/go/videoviewer";
+option cc_enable_arenas = true;
+
+// Import dependencies
+import "google/protobuf/timestamp.proto";
+
+// Video interaction types
+enum InteractionType {
+  INTERACTION_TYPE_UNSPECIFIED = 0;
+  INTERACTION_TYPE_VIEW = 1;
+  INTERACTION_TYPE_LIKE = 2;
+  INTERACTION_TYPE_DISLIKE = 3;
+}
+
+// Hourly statistics for a video
+message HourlyStats {
+  string video_id = 1;
+  
+  // Hour timestamp (rounded to the hour)
+  google.protobuf.Timestamp hour = 2;
+  
+  // Statistics for this hour
+  int64 views = 3;
+  int64 likes = 4;
+  int64 dislikes = 5;
+}
+
+// Video statistics summary
+message VideoStats {
+  string video_id = 1;
+  
+  // Total statistics
+  int64 total_views = 2;
+  int64 total_likes = 3;
+  int64 total_dislikes = 4;
+  
+  // Hourly breakdown
+  repeated HourlyStats hourly_stats = 5;
+  
+  // Last updated timestamp
+  google.protobuf.Timestamp last_updated = 6;
+}
+
+// Request to record a video interaction
+message RecordInteractionRequest {
+  string user_id = 1;
+  string video_id = 2;
+  InteractionType interaction_type = 3;
+}
+
+// Response for recording interaction
+message RecordInteractionResponse {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Timestamp recorded_at = 3;
+}
+
+// Request to get video statistics
+message GetVideoStatsRequest {
+  string video_id = 1;
+  
+  // Optional: limit hourly stats to recent hours
+  int32 hours_back = 2;
+}
+
+// Response with video statistics
+message GetVideoStatsResponse {
+  VideoStats stats = 1;
+}
+
+// Request to get statistics for multiple videos
+message GetMultipleVideoStatsRequest {
+  repeated string video_ids = 1;
+  
+  // Optional: limit hourly stats to recent hours
+  int32 hours_back = 2;
+}
+
+// Response with multiple video statistics
+message GetMultipleVideoStatsResponse {
+  repeated VideoStats stats = 1;
+}
+
+// Video Viewer Service definition
+service VideoViewerService {
+  // Record a video interaction (view, like, dislike)
+  rpc RecordInteraction(RecordInteractionRequest) returns (RecordInteractionResponse);
+  
+  // Get video statistics with hourly breakdown
+  rpc GetVideoStats(GetVideoStatsRequest) returns (GetVideoStatsResponse);
+  
+  // Get statistics for multiple videos
+  rpc GetMultipleVideoStats(GetMultipleVideoStatsRequest) returns (GetMultipleVideoStatsResponse);
+}

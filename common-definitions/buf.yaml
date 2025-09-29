@@ -1,0 +1,14 @@
+version: v2
+modules:
+  - path: .
+    name: buf.build/shared-api-poc/common-definitions
+deps:
+  - buf.build/googleapis/googleapis
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_VERSION_SUFFIX

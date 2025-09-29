@@ -1,0 +1,18 @@
+version: v2
+# Central Registry Code Generation for Go
+managed:
+  enabled: true  
+  override:
+    - file_option: go_package_prefix
+      value: github.com/shared-api-poc/proto
+plugins:
+  # Go code generation using local plugin
+  - local: protoc-gen-go
+    out: generated/go
+    opt:
+      - paths=source_relative
+  # gRPC Go code generation using local plugin
+  - local: protoc-gen-go-grpc  
+    out: generated/go
+    opt:
+      - paths=source_relative

@@ -1,0 +1,41 @@
+# Generated files
+*.pb.go
+*.pb.cc
+*.pb.h
+*_pb2.py
+*_pb2_grpc.py
+*.pbjson.go
+*.pbdart
+*.pbenum.dart
+*.pbgrpc.dart
+*.pbserver.dart
+
+# Build outputs
+/gen/
+/build/
+/dist/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Buf cache
+.buf/
+
+# Node.js (if using buf npm packages)
+node_modules/
+npm-debug.log*
+
+# Go (if using Go plugins)
+vendor/
+
+# Temporary files
+*.tmp
+*.temp

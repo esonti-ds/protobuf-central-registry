@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package mediastream;
+
+option go_package = "github.com/esonti/protobuf-sm-central-registry/media-stream-api/mediastream;mediastream";
+
+// SOURCE METADATA - Generated code will include:
+// - Repository: github.com/esonti/protobuf-sm-central-registry
+// - Module: media-stream-api
+// - API Type: product/service-specific  
+// - Dependencies: common-definitions/common
+// - Purpose: Video catalog and streaming service definitions
+
+import "google/protobuf/timestamp.proto";
+import "common-definitions/common/license.proto";
+
+// Video message representing a video file
+message Video {
+  int64 id = 1;
+  string title = 2;
+  string file_path = 3;
+  int32 duration = 4;  // Duration in seconds
+  int64 file_size = 5; // File size in bytes
+  string format = 6;   // Video format (e.g., "mp4")
+  string thumbnail_path = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  
+  // License requirements for this video
+  bool requires_license = 10;
+  repeated common.ProductType required_licenses = 11;
+}
+
+// Request to list all videos
+message ListVideosRequest {
+  int32 page = 1;      // Page number (optional, defaults to 1)
+  int32 page_size = 2; // Page size (optional, defaults to 10)
+  
+  // License context for filtering licensed content
+  string license_id = 3;
+  string organization_id = 4;
+}
+
+// Response containing list of videos
+message ListVideosResponse {
+  repeated Video videos = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  
+  // License validation results
+  common.CheckLicenseResponse license_status = 5;
+}
+
+// Request to get a specific video by ID
+message GetVideoRequest {
+  int64 id = 1;
+  
+  // License context for access validation
+  string license_id = 2;
+  string organization_id = 3;
+}
+
+// Response containing a single video
+message GetVideoResponse {
+  Video video = 1;
+  
+  // License validation for this specific video
+  common.CheckLicenseResponse license_status = 2;
+  bool access_granted = 3;
+}
+
+// Video service for basic CRUD operations
+service VideoService {
+  // List all videos with optional pagination
+  rpc ListVideos(ListVideosRequest) returns (ListVideosResponse);
+  
+  // Get a specific video by ID
+  rpc GetVideo(GetVideoRequest) returns (GetVideoResponse);
+}

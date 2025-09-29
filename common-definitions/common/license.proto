@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+package common;
+
+option go_package = "github.com/esonti/protobuf/gen/go/common";
+option cc_enable_arenas = true;
+
+// Import dependencies
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// License status enumeration
+enum LicenseStatus {
+  LICENSE_STATUS_UNSPECIFIED = 0;
+  LICENSE_STATUS_ACTIVE = 1;
+  LICENSE_STATUS_EXPIRED = 2;
+  LICENSE_STATUS_SUSPENDED = 3;
+  LICENSE_STATUS_REVOKED = 4;
+  LICENSE_STATUS_PENDING_ACTIVATION = 5;
+}
+
+// Product types that can be licensed
+enum ProductType {
+  PRODUCT_TYPE_UNSPECIFIED = 0;
+  PRODUCT_TYPE_VIDEO_STREAMING = 1;
+  PRODUCT_TYPE_ANALYTICS = 2;
+  PRODUCT_TYPE_TIMESTAMP_SERVICE = 3;
+  PRODUCT_TYPE_MEDIA_MANAGEMENT = 4;
+}
+
+// License feature flags
+message LicenseFeatures {
+  // Maximum number of concurrent users
+  int32 max_users = 1;
+  
+  // Maximum storage in GB
+  int64 max_storage_gb = 2;
+  
+  // Premium features enabled
+  bool premium_features = 3;
+  
+  // API rate limit per minute
+  int32 api_rate_limit = 4;
+  
+  // Advanced analytics enabled
+  bool advanced_analytics = 5;
+  
+  // Custom branding allowed
+  bool custom_branding = 6;
+}
+
+// Core license message
+message License {
+  // Unique license identifier
+  string license_id = 1;
+  
+  // Product this license is for
+  ProductType product_type = 2;
+  
+  // Organization/customer identifier
+  string organization_id = 3;
+  
+  // License status
+  LicenseStatus status = 4;
+  
+  // License issue timestamp
+  google.protobuf.Timestamp issued_at = 5;
+  
+  // License expiration timestamp
+  google.protobuf.Timestamp expires_at = 6;
+  
+  // Last activation timestamp
+  google.protobuf.Timestamp last_activated_at = 7;
+  
+  // License features and limits
+  LicenseFeatures features = 8;
+  
+  // License version/revision
+  string version = 9;
+  
+  // Additional metadata
+  map<string, string> metadata = 10;
+}
+
+// Request to issue a new license
+message IssueLicenseRequest {
+  // Product type for the license
+  ProductType product_type = 1;
+  
+  // Organization requesting the license
+  string organization_id = 2;
+  
+  // License validity duration
+  google.protobuf.Duration validity_duration = 3;
+  
+  // Features to enable in this license
+  LicenseFeatures features = 4;
+  
+  // Additional metadata
+  map<string, string> metadata = 5;
+}
+
+// Response for license issuance
+message IssueLicenseResponse {
+  // The issued license
+  License license = 1;
+  
+  // Success status
+  bool success = 2;
+  
+  // Message describing the result
+  string message = 3;
+}
+
+// Request to check/validate a license
+message CheckLicenseRequest {
+  // License ID to check
+  string license_id = 1;
+  
+  // Product type to validate against
+  ProductType product_type = 2;
+  
+  // Organization ID to validate against
+  string organization_id = 3;
+  
+  // Optional: specific feature to check
+  string feature_name = 4;
+}
+
+// Response for license check
+message CheckLicenseResponse {
+  // The license information
+  License license = 1;
+  
+  // Whether the license is valid
+  bool is_valid = 2;
+  
+  // Whether the license is active
+  bool is_active = 3;
+  
+  // Whether the specific feature is enabled (if requested)
+  bool feature_enabled = 4;
+  
+  // Validation message
+  string message = 5;
+  
+  // Days until expiration (-1 if expired)
+  int32 days_until_expiration = 6;
+}
+
+// Request to activate a license
+message ActivateLicenseRequest {
+  // License ID to activate
+  string license_id = 1;
+  
+  // Organization ID
+  string organization_id = 2;
+  
+  // Activation metadata
+  map<string, string> activation_metadata = 3;
+}
+
+// Response for license activation
+message ActivateLicenseResponse {
+  // The activated license
+  License license = 1;
+  
+  // Activation success
+  bool success = 2;
+  
+  // Activation message
+  string message = 3;
+}
+
+// Request to revoke a license
+message RevokeLicenseRequest {
+  // License ID to revoke
+  string license_id = 1;
+  
+  // Reason for revocation
+  string reason = 2;
+  
+  // Administrative metadata
+  map<string, string> admin_metadata = 3;
+}
+
+// Response for license revocation
+message RevokeLicenseResponse {
+  // Success status
+  bool success = 1;
+  
+  // Revocation message
+  string message = 2;
+  
+  // Timestamp of revocation
+  google.protobuf.Timestamp revoked_at = 3;
+}
+
+// License service definition
+service LicenseService {
+  // Issue a new license
+  rpc IssueLicense(IssueLicenseRequest) returns (IssueLicenseResponse);
+  
+  // Check/validate a license
+  rpc CheckLicense(CheckLicenseRequest) returns (CheckLicenseResponse);
+  
+  // Activate a license
+  rpc ActivateLicense(ActivateLicenseRequest) returns (ActivateLicenseResponse);
+  
+  // Revoke a license
+  rpc RevokeLicense(RevokeLicenseRequest) returns (RevokeLicenseResponse);
+}

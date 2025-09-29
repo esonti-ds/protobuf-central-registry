@@ -1,0 +1,15 @@
+version: v2
+modules:
+  - path: .
+    name: buf.build/esonti/protobuf-central-registry
+deps:
+  - buf.build/googleapis/googleapis
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_VERSION_SUFFIX
+    - PACKAGE_DIRECTORY_MATCH

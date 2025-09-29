@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package timestamp;
+
+option go_package = "github.com/esonti/protobuf/gen/go/timestamp";
+option cc_enable_arenas = true;
+
+import "google/protobuf/timestamp.proto";
+
+// TimestampMessage represents a timestamped message
+message TimestampMessage {
+  // The actual timestamp
+  google.protobuf.Timestamp timestamp = 1;
+  
+  // Source identifier for the timestamp
+  string source = 2;
+  
+  // Optional message or context
+  string message = 3;
+  
+  // Timezone information
+  string timezone = 4;
+  
+  // Precision level (seconds, milliseconds, microseconds, nanoseconds)
+  TimestampPrecision precision = 5;
+}
+
+// Enum for timestamp precision
+enum TimestampPrecision {
+  TIMESTAMP_PRECISION_UNSPECIFIED = 0;
+  TIMESTAMP_PRECISION_SECONDS = 1;
+  TIMESTAMP_PRECISION_MILLISECONDS = 2;
+  TIMESTAMP_PRECISION_MICROSECONDS = 3;
+  TIMESTAMP_PRECISION_NANOSECONDS = 4;
+}
+
+// Request message for getting current timestamp
+message GetCurrentTimestampRequest {
+  // Requested precision
+  TimestampPrecision precision = 1;
+  
+  // Requested timezone (optional, defaults to UTC)
+  string timezone = 2;
+  
+  // Source identifier for the request
+  string source = 3;
+}
+
+// Response message for current timestamp
+message GetCurrentTimestampResponse {
+  // The timestamp message
+  TimestampMessage timestamp_message = 1;
+  
+  // Server processing time in nanoseconds
+  int64 processing_time_ns = 2;
+}
+
+// Timestamp service definition
+service TimestampService {
+  // Get the current timestamp
+  rpc GetCurrentTimestamp(GetCurrentTimestampRequest) returns (GetCurrentTimestampResponse);
+  
+  // Stream timestamps at regular intervals
+  rpc StreamTimestamps(StreamTimestampsRequest) returns (stream StreamTimestampsResponse);
+}
+
+// Request for streaming timestamps
+message StreamTimestampsRequest {
+  // Interval in milliseconds between timestamps
+  int32 interval_ms = 1;
+  
+  // Maximum number of timestamps to send (0 = unlimited)
+  int32 max_count = 2;
+  
+  // Requested precision
+  TimestampPrecision precision = 3;
+  
+  // Requested timezone
+  string timezone = 4;
+  
+  // Source identifier
+  string source = 5;
+}
+
+// Response for streaming timestamps
+message StreamTimestampsResponse {
+  // The timestamp message
+  TimestampMessage timestamp_message = 1;
+}

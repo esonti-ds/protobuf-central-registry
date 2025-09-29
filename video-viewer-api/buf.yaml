@@ -1,0 +1,15 @@
+version: v2
+modules:
+  - path: .
+    name: buf.build/shared-api-poc/video-viewer-api
+deps:
+  - buf.build/shared-api-poc/timestamp-api
+  - buf.build/shared-api-poc/media-stream-api
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_VERSION_SUFFIX

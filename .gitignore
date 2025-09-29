@@ -1,0 +1,44 @@
+# Generated code
+generated/
+
+# Build artifacts
+build/
+dist/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Logs
+*.log
+
+# Buf cache
+.buf/
+
+# Node modules (if any JS tooling is added)
+node_modules/
+
+# Python cache (if any Python tooling is added)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Go build cache (if any Go tooling is added)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib

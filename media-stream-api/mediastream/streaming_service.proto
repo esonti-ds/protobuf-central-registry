@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package mediastream;
+
+option go_package = "github.com/esonti/protobuf-sm-central-registry/media-stream-api/mediastream;mediastream";
+
+// SOURCE METADATA - Generated code will include:
+// - Repository: github.com/esonti/protobuf-sm-central-registry
+// - Module: media-stream-api
+// - API Type: product/service-specific
+// - Dependencies: common-definitions/common  
+// - Purpose: WebRTC streaming service definitions
+
+import "common-definitions/common/license.proto";
+
+// WebRTC offer/answer exchange
+message WebRTCOffer {
+  string sdp = 1;
+  string type = 2; // "offer"
+}
+
+message WebRTCAnswer {
+  string sdp = 1;
+  string type = 2; // "answer"
+}
+
+// ICE candidate for WebRTC connection
+message IceCandidate {
+  string candidate = 1;
+  string sdp_mid = 2;
+  int32 sdp_mline_index = 3;
+}
+
+// Request to start streaming a video
+message StartStreamRequest {
+  int64 video_id = 1;
+  string client_id = 2; // Unique client identifier
+  
+  // License validation context
+  string license_id = 3;
+  string organization_id = 4;
+}
+
+// Response with WebRTC offer
+message StartStreamResponse {
+  WebRTCOffer offer = 1;
+  string session_id = 2; // Unique session identifier
+  
+  // License validation results
+  common.CheckLicenseResponse license_status = 3;
+  bool streaming_allowed = 4;
+}
+
+// Request to send answer back to server
+message SendAnswerRequest {
+  string session_id = 1;
+  WebRTCAnswer answer = 2;
+}
+
+// Response acknowledging answer
+message SendAnswerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Request to send ICE candidate
+message SendIceCandidateRequest {
+  string session_id = 1;
+  IceCandidate candidate = 2;
+}
+
+// Response acknowledging ICE candidate
+message SendIceCandidateResponse {
+  bool success = 1;
+}
+
+// Request to stop streaming
+message StopStreamRequest {
+  string session_id = 1;
+}
+
+// Response acknowledging stream stop
+message StopStreamResponse {
+  bool success = 1;
+}
+
+// Streaming service for WebRTC video streaming
+service StreamingService {
+  // Start streaming a video and get WebRTC offer
+  rpc StartStream(StartStreamRequest) returns (StartStreamResponse);
+  
+  // Send WebRTC answer back to server
+  rpc SendAnswer(SendAnswerRequest) returns (SendAnswerResponse);
+  
+  // Send ICE candidate to server
+  rpc SendIceCandidate(SendIceCandidateRequest) returns (SendIceCandidateResponse);
+  
+  // Stop streaming session
+  rpc StopStream(StopStreamRequest) returns (StopStreamResponse);
+}
