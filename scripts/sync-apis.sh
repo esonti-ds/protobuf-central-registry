@@ -18,12 +18,18 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # API repository mappings
-declare -A API_REPOS=(
-    ["common-definitions"]="protobuf-sm-common-definitions"
-    ["timestamp-api"]="protobuf-sm-timestamp-api"
-    ["media-stream-api"]="protobuf-sm-media-stream-api"
-    ["video-viewer-api"]="protobuf-sm-video-viewer-api"
-)
+get_repo_name() {
+    case "$1" in
+        "common-definitions") echo "protobuf-sm-common-definitions" ;;
+        "timestamp-api") echo "protobuf-sm-timestamp-api" ;;
+        "media-stream-api") echo "protobuf-sm-media-stream-api" ;;
+        "video-viewer-api") echo "protobuf-sm-video-viewer-api" ;;
+        *) echo "" ;;
+    esac
+}
+
+# API list
+API_DIRS=("common-definitions" "timestamp-api" "media-stream-api" "video-viewer-api")
 
 print_usage() {
     echo "🔄 API Synchronization for Central Registry"
@@ -62,7 +68,7 @@ api_status() {
     echo "📋 API Status:"
     echo ""
     
-    for api_dir in "${!API_REPOS[@]}"; do
+    for api_dir in "${API_DIRS[@]}"; do
         if [ -d "$api_dir" ]; then
             echo -e "   ${GREEN}✅ $api_dir${NC}"
             if [ -f "$api_dir/buf.yaml" ]; then
@@ -78,10 +84,10 @@ api_status() {
     
     echo ""
     echo "📊 Summary:"
-    local total_count=${#API_REPOS[@]}
+    local total_count=${#API_DIRS[@]}
     local present_count=0
     
-    for api_dir in "${!API_REPOS[@]}"; do
+    for api_dir in "${API_DIRS[@]}"; do
         if [ -d "$api_dir" ]; then
             ((present_count++))
         fi
@@ -97,12 +103,13 @@ api_status() {
 
 sync_api() {
     local api_name=$1
-    local repo_name="${API_REPOS[$api_name]}"
+    local repo_name
+    repo_name=$(get_repo_name "$api_name")
     
     if [ -z "$repo_name" ]; then
         echo -e "${RED}❌ Unknown API: $api_name${NC}"
         echo "💡 Available APIs:"
-        for api in "${!API_REPOS[@]}"; do
+        for api in "${API_DIRS[@]}"; do
             echo "   $api"
         done
         return 1
@@ -164,9 +171,9 @@ sync_all_apis() {
     echo ""
     
     local success_count=0
-    local total_count=${#API_REPOS[@]}
+    local total_count=${#API_DIRS[@]}
     
-    for api_name in "${!API_REPOS[@]}"; do
+    for api_name in "${API_DIRS[@]}"; do
         if sync_api "$api_name"; then
             ((success_count++))
         fi
@@ -198,8 +205,9 @@ sync_all_apis() {
 list_apis() {
     echo "📋 Available APIs:"
     echo ""
-    for api_name in "${!API_REPOS[@]}"; do
-        local repo_name="${API_REPOS[$api_name]}"
+    for api_name in "${API_DIRS[@]}"; do
+        local repo_name
+        repo_name=$(get_repo_name "$api_name")
         echo "   📁 $api_name"
         echo "      🔗 Repository: $repo_name"
         if [ -d "$api_name" ]; then
